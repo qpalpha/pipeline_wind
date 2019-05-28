@@ -11,6 +11,10 @@ except:
 import datetime
 from WindBase import *
 import numpy as np
+import dates
+import warnings
+
+warnings.filterwarnings('ignore')
 
 class EODPrice(WindBase):
     

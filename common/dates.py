@@ -7,11 +7,15 @@ Created on Sat May 18 19:04:16 2019
 """
 
 #%% Import part
-from qp import *
+import sys
+sys.path.append('../../common')
+try:
+    from qp import *
+except:
+    from ini import *
 import numpy as np
 import pandas as pd
 import os
-import sys
 import time
 import datetime
 

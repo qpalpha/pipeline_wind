@@ -12,6 +12,7 @@ except:
 import datetime
 from WindBase import *
 import numpy as np
+import dates
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -22,10 +23,10 @@ class Index(WindBase):
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.type       = 'Index'
-        self.index_name = self.ini.findInt('Index~Name')
+        self.index_name = self.ini.findString('Index~Name')
         self.index_code = self.ini.findInt('Index~Code')
         try:
-            self.StartDate = self.ini.findInt('Index~StartDate')
+            self.StartDate = self.ini.findString('Index~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()

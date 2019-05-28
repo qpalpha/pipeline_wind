@@ -12,6 +12,7 @@ except:
 import datetime
 from WindBase import *
 import numpy as np
+import dates
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -22,18 +23,18 @@ class indzx(WindBase):
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.type                   = 'indzx'
-        self.indzx_name              = self.ini.findInt('indzx~Name')
+        self.indzx_name             = self.ini.findString('indzx~Name')
         try:
             self.StartDate          = self.ini.findInt('indzx~StartDate')
         except:
             self.StartDate          = 20070101
         self.EndDate                = dates.today()
-        sqlfile                     = self.ini.findInt('indzx~SQLFile')
-        self.sql                    = self.readsql()
+        sqlfile                     = self.ini.findString('indzx~SQLFile')
+        self.sql                    = self.readsql(sqlfile)
         
     def readsql(self, filename = 'sql'):
         f                           = open(filename)
-        sql                         = f.read
+        sql                         = f.read()
         f.close()
         return sql
     
@@ -66,7 +67,7 @@ class indzx(WindBase):
 
     def processData(self):
         raw_data                    = self.my_data_pd
-        raw_data['ZX_CODE']         =
+#        raw_data['ZX_CODE']         = raw_data
         data_mat                    = self.processBeginEndData(raw_data,self.StartDate,self.EndDate)
         self.df_data = data_mat         
         
@@ -85,6 +86,6 @@ if __name__ == '__main__':
     try:
         fini = sys.argv[1]
     except:
-        fini = 'csi300.ini'
+        fini = 'indzx.ini'
     a = indzx(fini)
     a.run()

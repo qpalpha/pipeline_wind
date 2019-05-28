@@ -12,6 +12,7 @@ except:
 import datetime
 from WindBase import *
 import numpy as np
+import dates
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -22,7 +23,7 @@ class stop(WindBase):
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.type       = 'stop'
-        self.stop_name = self.ini.findInt('stop~Name')
+        self.stop_name = self.ini.findString('stop~Name')
         try:
             self.StartDate = self.ini.findInt('stop~StartDate')
         except:
