@@ -3,7 +3,10 @@
 import cx_Oracle
 import pandas as pd
 import os
-from qp import *
+try:
+    from qp import *
+except:
+    from ini import *
 import datetime
 
 class WindBase():
@@ -103,6 +106,13 @@ class WindBase():
         self.__endtime = datetime.datetime.now()
         exc_time = self.__endtime - self.__starttime
         print('Time cost : %f second'  % exc_time.seconds)
+        
+    def mergeData(self, data1, data2):
+        date_list1 = data1.index.values
+        date_list2 = data2.index.values
+        date_list1_new = list(set(date_list1).difference(set(date_list2)))
+        data = pd.concat([data1.loc[date_list1_new],data2],axis=0)
+        return data
 
     def run(self):
         self.timeStart()

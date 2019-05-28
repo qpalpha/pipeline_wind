@@ -16,29 +16,29 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-class Index(WindBase):
+class stop(WindBase):
     
     
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
-        self.type       = 'Index'
-        self.index_name = self.ini.findInt('Index~Name')
-        self.index_code = self.ini.findInt('Index~Code')
+        self.type       = 'stop'
+        self.stop_name = self.ini.findInt('stop~Name')
         try:
-            self.StartDate = self.ini.findInt('Index~StartDate')
+            self.StartDate = self.ini.findInt('stop~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
         self.sql = "SELECT \
-                    WINDDF.AINDEXMEMBERS.S_CON_WINDCODE AS TICKER, \
-                    WINDDF.AINDEXMEMBERS.S_CON_INDATE AS BEGINDATE, \
-                    WINDDF.AINDEXMEMBERS.S_CON_OUTDATE AS ENDDATE \
+                    WINDDF.ASHARETRADINGSUSPENSION.S_INFO_WINDCODE AS TICKER, \
+                    WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDDATE AS BEGINDATE, \
+                    WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDDATE AS ENDDATE \
                     FROM \
-                    WINDDF.AINDEXMEMBERS  \
+                    WINDDF.ASHARETRADINGSUSPENSION \
                     WHERE \
-                    WINDDF.AINDEXMEMBERS.S_INFO_WINDCODE = '%s' \
+                    WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDTYPE = 444016000 AND \
+                    WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDDATE >= %s \
                     ORDER BY \
-                    BEGINDATE ASC" % self.index_code
+                    BEGINDATE ASC" % self.StartDate
 
     def processData(self):
         raw_data                    = self.my_data_pd
@@ -48,10 +48,10 @@ class Index(WindBase):
         
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('Index~Outdir')
+            file_dir = self.ini.findString('stop~Outdir')
         except:
             file_dir = './'
-        filename                    = file_dir + '/' + self.index_name + '.bin'
+        filename                    = file_dir + '/' + self.stop_name + '.bin'
         df_data                     = self.df_data
         self.saveBinFile(df_data,filename)
 
@@ -61,5 +61,5 @@ if __name__ == '__main__':
         fini = sys.argv[1]
     except:
         fini = 'csi300.ini'
-    a = Index(fini)
+    a = stop(fini)
     a.run()

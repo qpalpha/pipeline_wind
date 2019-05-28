@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append('../../common')
 import cx_Oracle
 import pandas as pd
 import os
-from qp import Ini
+try:
+    from qp import *
+except:
+    from ini import *
 import datetime
-import sys
-sys.path.append('../../common')
 from WindBase import *
 import numpy as np
-import dates
-import datetime
 
 class st(WindBase):
     
