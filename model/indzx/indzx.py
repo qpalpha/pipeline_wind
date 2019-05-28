@@ -53,7 +53,7 @@ class indzx(WindBase):
             stock_list              = raw_data.loc[(raw_data['BEGINDATE'] <= ii)&(raw_data['ENDDATE'] >= ii),'TICKER']
             if len(DataColumns)>0:
                 oneday_data         = raw_data.loc[(raw_data['BEGINDATE'] <= ii)&(raw_data['ENDDATE'] >= ii), DataColumns]
-                data_array          = np.hstack([data_array, oneday_data])
+                data_array          = np.hstack([data_array, oneday_data.values.flat])
             date                    = np.tile(ii,stock_list.shape)
             idx                     = np.vstack([stock_list, date])
             index_array             = np.hstack([index_array, idx])
@@ -65,10 +65,11 @@ class indzx(WindBase):
         data_mat.columns            = [ticker for ii, ticker in data_mat.columns]
         return data_mat
 
+
     def processData(self):
         raw_data                    = self.my_data_pd
-#        raw_data['ZX_CODE']         = raw_data
-        data_mat                    = self.processBeginEndData(raw_data,self.StartDate,self.EndDate)
+        raw_data['ZX_CODE']         = 11*1e+8 + raw_data['ZX_CODE'].str[3:4].apply(lambda x : ord(x) -87 if not x.isdigit() else int(x))*1e+6 + raw_data['ZX_CODE'].str[4:10].astype(int)
+        data_mat                    = self.processBeginEndData(raw_data,self.StartDate,self.EndDate,['ZX_CODE'])
         self.df_data = data_mat         
         
         
