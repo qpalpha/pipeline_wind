@@ -46,16 +46,6 @@ class EODPrice(WindBase):
                     WINDDF.ASHAREEODPRICES.S_INFO_WINDCODE ASC" % StartDate
 
         
-    def prodf(self, raw_df,columnname='',dataname='' ):
-        new_df                      = pd.DataFrame(raw_df[dataname].values.reshape([1,-1]), columns = raw_df[columnname])
-        return new_df
-    
-    def SQLDataToDF(self, data, indexname='',columnname='',dataname='' ):
-        raw_data                    = data[[indexname,columnname,dataname]]
-        df_data                     = raw_data.groupby([indexname]).apply(self.prodf,columnname,dataname)
-        df_data.reset_index(level=1,drop=True,inplace = True)
-        return df_data
-        
     def processData(self):
         raw_data                    = self.my_data_pd
         raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])
@@ -63,7 +53,7 @@ class EODPrice(WindBase):
         names.remove('TICKER')
         names.remove('DT')
         for ii in names:
-            self.df_data                = self.SQLDataToDF(raw_data, indexname='DT',columnname='TICKER',dataname=ii )
+            self.df_data                = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname=ii )
             self.saveFile(ii)
                 
                 
