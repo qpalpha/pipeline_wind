@@ -12,12 +12,11 @@ except:
 import datetime
 from WindBase import *
 import numpy as np
+import dates
 import warnings
-
 warnings.filterwarnings('ignore')
 
 class estu(WindBase):
-    
     
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)

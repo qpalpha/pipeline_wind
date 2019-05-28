@@ -14,7 +14,6 @@ import numpy as np
 
 class TradeDate(WindBase):
     
-    
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.type = 'TradeDate'
