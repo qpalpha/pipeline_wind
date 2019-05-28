@@ -157,7 +157,8 @@ class Ini():
         return 'muline',string
     
     def _rm_comments(self,s):
-        return s[:s.find('#')]
+        if '#' in s: return s[:s.find('#')]
+        else: return s
     
     def _rm_blanks(self,s):
         return re.sub(r'\s+','',s.strip())
