@@ -22,43 +22,35 @@ class snew(WindBase):
     
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
-        self.file_name = self.ini.findString('snew~Name')
+        self.type           = 'snew'
+        self.file_name      = self.ini.findString(self.type + '~Name')
         try:
-            self.StartDate = self.ini.findInt('snew~StartDate')
+            self.StartDate  = self.ini.findInt(self.type + '~StartDate')
         except:
-            self.StartDate = 20070101
-        self.EndDate = dates.today()
+            self.StartDate  = 20070101
+        self.EndDate        = dates.today()
         self.sql = "SELECT \
-                    WINDDF.ASHAREPREVIOUSNAME.S_INFO_WINDCODE AS TICKER, \
-                    WINDDF.ASHAREPREVIOUSNAME.BEGINDATE, \
-                    WINDDF.ASHAREPREVIOUSNAME.ENDDATE, \
-                    WINDDF.ASHAREPREVIOUSNAME.ANN_DT, \
-                    WINDDF.ASHAREPREVIOUSNAME.S_INFO_NAME \
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_WINDCODE AS TICKER, \
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_NAME, \
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_LISTBOARD , \
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_LISTDATE AS BEGINDATE, \
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_DELISTDATE AS ENDDATE, \
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_LISTBOARDNAME \
                     FROM \
-                    WINDDF.ASHAREPREVIOUSNAME \
+                    WINDDF.ASHAREDESCRIPTION \
                     WHERE \
-                    WINDDF.ASHAREPREVIOUSNAME.CHANGEREASON = 200036000 \
-                    ORDER BY \
-                    WINDDF.ASHAREPREVIOUSNAME.BEGINDATE ASC"
-
+                    WINDDF.ASHAREDESCRIPTION.S_INFO_LISTDATE > 0 \
+                    -- AND WINDDF.ASHAREDESCRIPTION.S_INFO_LISTBOARD <> 434009000"
         
     def processData(self):
         raw_data                    = self.my_data_pd
-        raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])           
-        raw_data.fillna(20990101,inplace=True)
-        raw_data['BEGINDATE']       = raw_data['BEGINDATE'].astype(int)
-        raw_data['ENDDATE']         = raw_data['ENDDATE'].astype(int)
-        date_list                   = dates.get_dates(self.StartDate,self.EndDate)
-        data_df                     = pd.DataFrame()
-        for ii in date_list:
-            stock_list              = raw_data.loc[(raw_data['BEGINDATE'] <= ii)&(raw_data['ENDDATE'] >= ii),'TICKER']
-            stock_df                = pd.DataFrame(np.ones(stock_list.shape).reshape([1,-1]),index = [ii], columns = stock_list)
-            data_df                 = pd.concat([data_df, stock_df], axis = 0)
-        self.df_data = data_df         
+        raw_data['ENDDATE']         = [dates.date_offset(int(dt),120) for dt in raw_data['BEGINDATE'].values]
+        data_mat                    = self.processBeginEndData(raw_data,self.StartDate,self.EndDate)
+        self.df_data = data_mat        
                 
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('snew~Outdir')
+            file_dir = self.ini.findString(self.type + '~Outdir')
         except:
             file_dir = './'
         df_data                     = self.df_data

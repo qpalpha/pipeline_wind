@@ -8,6 +8,7 @@ try:
 except:
     from ini import *
 import datetime
+import dates
 
 class WindBase():
     
