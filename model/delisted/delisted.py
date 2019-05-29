@@ -5,10 +5,7 @@ sys.path.append('../../common')
 import cx_Oracle
 import pandas as pd
 import os
-try:
-    from qp import *
-except:
-    from ini import *
+from qp import *
 import datetime
 from WindBase import *
 import numpy as np
@@ -18,8 +15,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class delisted(WindBase):
-    
-    
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.file_name = self.ini.findString('delisted~Name')

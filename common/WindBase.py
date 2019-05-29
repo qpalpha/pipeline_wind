@@ -3,10 +3,7 @@
 import cx_Oracle
 import pandas as pd
 import os
-try:
-    from qp import *
-except:
-    from ini import *
+from qp import *
 import datetime
 import dates
 
