@@ -62,4 +62,8 @@ def today(return_type='int'):
     if return_type =='int':
         date = int(date) 
     return date
+
+def date_offset(date,offset=1):
+    dates = all_trade_dates()
+    return dates[np.where(dates>=date)[0][0]+offset]
       
