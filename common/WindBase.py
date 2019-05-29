@@ -102,6 +102,12 @@ class WindBase():
         stock_columns               = list(df_data.columns.values)
         save_binary_matrix(filename, df_data.values, date_index, stock_columns)
         print('Save File:%s' % filename)
+        
+    def readsql(self, filename = 'sql'):
+        f                           = open(filename)
+        sql                         = f.read()
+        f.close()
+        return sql
     
         # caculate time cost
     def timeStart(self):
