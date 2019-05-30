@@ -6,7 +6,7 @@ import numpy as np
 import os
 from qp import *
 import datetime
-import dates
+import dates as dts
 
 class WindBase():
     
@@ -65,7 +65,7 @@ class WindBase():
         raw_data.fillna(20990101,inplace=True)
         raw_data['BEGINDATE']       = raw_data['BEGINDATE'].astype(int)
         raw_data['ENDDATE']         = raw_data['ENDDATE'].astype(int)
-        date_list                   = dates.get_dates(StartDate,EndDate)
+        date_list                   = dts.get_dates(StartDate,EndDate)
         data_df                     = pd.DataFrame()
         index_array                 = np.array([[],[]], ndmin= 2)
         data_array                  = np.array([])
@@ -176,3 +176,30 @@ def merge_and_update(df1,df2):
     df = pd.DataFrame(df1,index=dts_merge)
     df.loc[dts_new,:] = df2.loc[dts_new,:]
     return df
+
+def asset_returns(tickers=None,dates=None,rolling_window=1,ret_type='realized'):
+    if type(dates[0]) is str:
+        dates = np.array([int(dt) for dt in dates])
+    sdate = dates[0]
+    edate = dates[-1]
+    if ret_type=='realized':
+        ssdate = dts._date_offset(sdate,offset=-rolling_window)
+        sedate = dts._date_offset(edate,offset=-rolling_window)
+        dates_all = dts.get_dates(ssdate,edate)
+        dates0 = dates_all[dates_all<=sedate]
+        dates1 = dates_all[dates_all>=sdate]
+        index_dates = dates1
+    elif ret_type=='future':
+        esdate = dts._date_offset(sdate,offset=rolling_window)
+        eedate = dts._date_offset(edate,offset=rolling_window)
+        dates_all = dts.get_dates(sdate,eedate)
+        dates0 = dates_all[dates_all<=edate]
+        dates1 = dates_all[dates_all>=esdate]
+        index_dates = dates0
+    price = load_data_dict('adjusted_close',fill0=np.nan)
+    price = price.loc[dates_all,:]
+    if tickers is not None:
+        price = price.loc[:,tickers]
+    ret = price.loc[dates1,:].values/price.loc[dates0,:].values-1
+    ret_df = pd.DataFrame(ret,index=index_dates,columns=price.columns)
+    return ret_df.loc[dates,:]
