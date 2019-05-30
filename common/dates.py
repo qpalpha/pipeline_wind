@@ -10,17 +10,7 @@ Created on Sat May 18 19:04:16 2019
 
 import sys
 sys.path.append('../../common')
-try:
-    from qp import *
-except:
-    from ini import *
-
-try:
-    from qp import *
-    trade_date_file = '/qp/data/platform_objects/core/trade.date.txt'
-except:
-    from ini import *
-    trade_date_file = '../../trade.date.txt'
+from qp import *
 
 import numpy as np
 import pandas as pd
@@ -31,7 +21,7 @@ import datetime
 #%%
 def all_trade_dates():
 #    file = '/qp/data/platform_objects/core/trade.date.txt'
-    file = trade_date_file
+    file = '../../trade.date.txt'
     return pd.read_csv(file,header=None,squeeze=True).values
 
 def _date_offset(date,offset=-1):

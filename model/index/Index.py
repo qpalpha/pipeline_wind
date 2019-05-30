@@ -21,9 +21,9 @@ class Index(WindBase):
         WindBase.__init__(self, ini_file)
         self.type       = 'Index'
         self.index_name = self.ini.findString('Index~Name')
-        self.index_code = self.ini.findInt('Index~Code')
+        self.index_code = self.ini.findString('Index~Code')
         try:
-            self.StartDate = self.ini.findString('Index~StartDate')
+            self.StartDate = self.ini.findInt('Index~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
@@ -50,7 +50,7 @@ class Index(WindBase):
         except:
             file_dir = './'
         filename                    = file_dir + '/' + self.index_name + '.bin'
-        df_data                     = self.df_data
+        df_data                     = self.screen_estu(self.df_data)
         self.saveBinFile(df_data,filename)
 
 

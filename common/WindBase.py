@@ -2,6 +2,7 @@
 
 import cx_Oracle
 import pandas as pd
+import numpy as np
 import os
 from qp import *
 import datetime
@@ -123,6 +124,17 @@ class WindBase():
         date_list1_new = list(set(date_list1).difference(set(date_list2)))
         data = pd.concat([data1.loc[date_list1_new],data2],axis=0)
         return data
+    
+    def screen_estu(self,df_data,fillna=None):
+        df_data.index               = df_data.index.astype(str)
+        estu                        = load_data_dict('estu',dates_type='str')
+        dates                       = list(estu.index&set(df_data.index))
+        dates.sort()
+        df_data                     = pd.DataFrame(df_data,columns=estu.columns,index=dates)
+        if fillna is not None:
+            df_data                 = df_data.fillna(fillna)
+        df_data[~(estu.loc[dates,:]==1)] = np.nan
+        return df_data
 
     def run(self):
         self.timeStart()
@@ -130,3 +142,37 @@ class WindBase():
         self.processData()
         self.saveFile()
         self.timeEnd()
+        
+#%%
+def load_data_dict(field,ini=None,fini=None,fill0=None,dates_type='int'):
+    if fini is None:
+        fini = '../../common/cn.eq.base.ini'
+#        fini = '/qp/data/ini/cn.eq.base.ini'
+    if ini is None:
+        ini = Ini(fini)
+    try:
+        svec = ini.findStringVec('DataDictionary~'+field)
+    except:
+        raise Exception('[{}] is not in the DataDictionary!'.format(field))
+    data = readm2df(svec[0].split(':')[1])
+    if len(svec)>1:
+        for ss in svec[1:]:
+            data_next = readm2df(ss.split(':')[1])
+            data = merge_and_update(data,data_next)
+    if dates_type=='int': data.index = data.index.astype(int)
+    elif dates_type=='str': data.index = data.index.astype(str)
+    if fill0 is not None:
+        data[data==0] = fill0
+    return data
+
+def merge_and_update(df1,df2):
+    # dates
+    dts1 = set(df1.index)
+    dts2 = set(df2.index)
+    dts_merge = list(set.union(dts1,dts2))
+    dts_merge.sort()
+    dts_new = list(dts2-dts1)
+    # tickers
+    df = pd.DataFrame(df1,index=dts_merge)
+    df.loc[dts_new,:] = df2.loc[dts_new,:]
+    return df

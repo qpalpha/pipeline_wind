@@ -59,10 +59,10 @@ class st(WindBase):
             file_dir = self.ini.findString('st~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.df_data
+        df_data                     = self.screen_estu(self.df_data)
         date_index                  = [str(ii) for ii in df_data.index.values]
         stock_columns               = list(df_data.columns.values)
-        filename                    = file_dir + '/' + 'st' + '.bin'
+        filename                    = file_dir + '/' + 'ST' + '.bin'
         save_binary_matrix(filename, df_data.values, date_index, stock_columns)
         print('Save File:%s' % filename)
     

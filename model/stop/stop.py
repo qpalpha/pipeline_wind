@@ -50,7 +50,7 @@ class stop(WindBase):
         except:
             file_dir = './'
         filename                    = file_dir + '/' + self.stop_name + '.bin'
-        df_data                     = self.df_data
+        df_data                     = self.screen_estu(self.df_data)
         self.saveBinFile(df_data,filename)
 
 
@@ -58,6 +58,6 @@ if __name__ == '__main__':
     try:
         fini = sys.argv[1]
     except:
-        fini = 'csi300.ini'
+        fini = 'stop.ini'
     a = stop(fini)
     a.run()

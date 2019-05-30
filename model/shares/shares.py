@@ -47,21 +47,24 @@ class shares(WindBase):
         names.remove('DT')
         for ii in names:
             self.df_data            = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname=ii)*1e4
+            print(ii)
             self.saveFile(ii)
         
                 
     def saveFile(self, name=''):
-        try:
-            file_dir = self.ini.findString('Outdir')
-        except:
-            file_dir = './'
-        df_data                     = self.df_data
-        date_index                  = [str(ii) for ii in df_data.index.values]
-        stock_columns               = list(df_data.columns.values)
-        filename                    = file_dir + '/' + name + '.bin'
-        save_binary_matrix(filename, df_data.values, date_index, stock_columns)
-        print('Save File:%s' % filename)
-
+        if name:
+            try:
+                file_dir = self.ini.findString('Outdir')
+            except:
+                file_dir = './'
+            df_data                     = self.df_data
+            date_index                  = [str(ii) for ii in df_data.index.values]
+            stock_columns               = list(df_data.columns.values)
+            filename                    = file_dir + '/' + name + '.bin'
+            save_binary_matrix(filename, df_data.values, date_index, stock_columns)
+            print('Save File:%s' % filename)
+    
+    
 if __name__ == '__main__':
     a = shares('shares.ini')
     a.run()

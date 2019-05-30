@@ -14,7 +14,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class estu(WindBase):
-    
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.type = 'estu'
@@ -66,7 +65,7 @@ class estu(WindBase):
         df_data                     = self.df_data
         date_index                  = [str(ii) for ii in df_data.index.values]
         stock_columns               = list(df_data.columns.values)
-        filename                    = file_dir + '/' + 'estu' + '.bin'
+        filename                    = file_dir + '/' + 'ESTU' + '.bin'
         save_binary_matrix(filename, df_data.values, date_index, stock_columns)
         print('Save File:%s' % filename)
     

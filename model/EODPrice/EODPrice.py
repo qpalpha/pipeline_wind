@@ -31,7 +31,7 @@ class EODPrice(WindBase):
                     WINDDF.ASHAREEODPRICES.S_DQ_LOW AS LOW, \
                     WINDDF.ASHAREEODPRICES.S_DQ_CLOSE AS CLOSE, \
                     WINDDF.ASHAREEODPRICES.S_DQ_CHANGE AS CHANGE, \
-                    WINDDF.ASHAREEODPRICES.S_DQ_PCTCHANGE AS PCTCCHANGE, \
+                    WINDDF.ASHAREEODPRICES.S_DQ_PCTCHANGE AS PCTCHANGE, \
                     WINDDF.ASHAREEODPRICES.S_DQ_VOLUME AS VOLUME, \
                     WINDDF.ASHAREEODPRICES.S_DQ_AMOUNT AS AMOUNT, \
                     WINDDF.ASHAREEODPRICES.S_DQ_ADJOPEN AS ADJOPEN, \
@@ -66,7 +66,7 @@ class EODPrice(WindBase):
             file_dir = self.ini.findString('EODPrice~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.df_data
+        df_data                     = self.screen_estu(self.df_data)
         date_index                  = [str(ii) for ii in df_data.index.values]
         stock_columns               = list(df_data.columns.values)
         filename                    = file_dir + '/' + name + '.bin'
