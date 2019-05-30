@@ -14,8 +14,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class EODPrice(WindBase):
-    
-    
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         self.type = 'EODPrice'
