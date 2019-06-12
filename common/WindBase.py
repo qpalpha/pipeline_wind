@@ -86,6 +86,9 @@ class WindBase():
         return data_mat
     
     def prodf(self, raw_df,columnname='',dataname='' ):
+        print(raw_df.iloc[0,0])
+        if raw_df.iloc[0,0] == '20190620':
+            a=1
         new_df                      = pd.DataFrame(raw_df[dataname].values.reshape([1,-1]), columns = raw_df[columnname])
         return new_df
     
@@ -146,8 +149,8 @@ class WindBase():
 #%%
 def load_data_dict(field,ini=None,fini=None,fill0=None,dates_type='int'):
     if fini is None:
-        fini = '../../common/cn.eq.base.ini'
-#        fini = '/qp/data/ini/cn.eq.base.ini'
+#        fini = '../../common/cn.eq.base.ini'
+        fini = '/qp/data/ini/cn.eq.base.ini'
     if ini is None:
         ini = Ini(fini)
     try:
