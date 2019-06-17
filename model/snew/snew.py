@@ -52,6 +52,7 @@ class snew(WindBase):
             file_dir = './'
         df_data                     = self.screen_estu(self.df_data)
         filename                    = file_dir + '/' + self.file_name + '.bin'
+        df_data                     = self.mergeBin(filename,df_data)
         self.saveBinFile(df_data,filename)
         
 

@@ -20,7 +20,8 @@ class ConWeight(WindBase):
         self.name             = self.ini.findString('Name')
         self.index_ticker     = self.ini.findString('IndexTicker')
         try:
-            self.StartDate          = self.ini.findInt('StartDate')
+            StartDate               = self.ini.findInt('StartDate')
+            self.StartDate          = dates._date_offset(StartDate,32)
         except:
             self.StartDate          = 20080101
         self.StartDate2             = dates._date_offset(self.StartDate,-31)
@@ -68,8 +69,7 @@ class ConWeight(WindBase):
         # Capture data of trade_dates
         data_mat                    = data_mat2.loc[trade_dates,:]
         data_mat                    = data_mat.div(data_mat.sum(axis=1),axis=0)
-        self.df_data = data_mat         
-        
+        self.df_data = data_mat*100        
         
     def saveFile(self):
         try:
@@ -78,6 +78,9 @@ class ConWeight(WindBase):
             file_dir = './'
         filename                    = file_dir + '/' + self.name + '.bin'
         df_data                     = self.screen_estu(self.df_data)
+        df_data                     = self.mergeBin(filename,df_data)
+        df_data.fillna(0,inplace=True)
+        
         self.saveBinFile(df_data,filename)
 
 

@@ -26,42 +26,49 @@ class shares(WindBase):
         self.sql = '''
             select 
                 S_INFO_WINDCODE as ticker,
-                TRADE_DT as dt,
-                TOT_SHR_TODAY as shares_outstanding,
-                FLOAT_A_SHR_TODAY as shares_float,
-                FREE_SHARES_TODAY as shares_free
+                CHANGE_DT1 as dt,
+                TOT_SHR as shares_outstanding,
+                FLOAT_SHR as shares_float,
+                FLOAT_A_SHR as shares_float_a,
+                ANN_DT
             from 
-                winddf.AShareEODDerivativeIndicator
-            where 
-                TRADE_DT>={}
+                winddf.AShareCapitalization
             order by
-                TRADE_DT,S_INFO_WINDCODE
-            '''.format(self.StartDate)
-
+                CHANGE_DT,S_INFO_WINDCODE,ANN_DT
+            '''
         
     def processData(self):
-        raw_data                    = self.my_data_pd
+        raw_data                    = self.my_data_pd.drop_duplicates(['TICKER','DT'],keep='last')
         raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])
+        raw_data['DT']              = raw_data['DT'].astype(int)
+        # Data before and after self.StartDate
+        raw_data_before             = raw_data[raw_data['DT']<=self.StartDate]
+        raw_data_after              = raw_data[raw_data['DT']>self.StartDate]
+        raw_data_before_last_day    = raw_data_before.groupby(['TICKER']).apply(lambda df:df.iloc[-1,:])
+        raw_data_before_last_day['DT'] = self.StartDate
+        raw_data                    = pd.concat([raw_data_before_last_day,raw_data_after])
+        # names
         names                       = raw_data.columns.values.tolist()
         names.remove('TICKER')
         names.remove('DT')
+        names.remove('ANN_DT')
+        
         for ii in names:
-            self.df_data            = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname=ii)*1e4
+            df_data                 = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname=ii)*1e4
+            self.df_data            = df_data.fillna(method='ffill',axis=0)
             self.saveFile(ii)
         
-                
+    
     def saveFile(self, name=''):
         if name:
             try:
                 file_dir = self.ini.findString('Outdir')
             except:
                 file_dir = './'
-            df_data                     = self.df_data
-            date_index                  = [str(ii) for ii in df_data.index.values]
-            stock_columns               = list(df_data.columns.values)
+            df_data                     = self.screen_estu(self.df_data)
             filename                    = file_dir + '/' + name.lower() + '.bin'
-            save_binary_matrix(filename, df_data.values, date_index, stock_columns)
-            print('Save File:%s' % filename)
+            df_data                     = self.mergeBin(filename,df_data)
+            self.saveBinFile(df_data,filename)
     
     
 if __name__ == '__main__':

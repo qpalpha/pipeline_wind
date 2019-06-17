@@ -67,12 +67,11 @@ class EODIndex(WindBase):
             file_dir = self.ini.findString('EODIndex~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
-        date_index                  = [str(ii) for ii in df_data.index.values]
-        stock_columns               = list(df_data.columns.values)
+        #df_data                     = self.screen_estu(self.df_data) do not screen
         filename                    = file_dir + '/' + name.lower() + '.bin'
-        save_binary_matrix(filename, df_data.values, date_index, stock_columns)
-        print('Save File:%s' % filename)
+        df_data                     = self.df_data
+        df_data                     = self.mergeBin(filename,df_data)
+        self.saveBinFile(df_data,filename)
     
     def run(self):
         self.getDatabaseData()

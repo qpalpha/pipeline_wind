@@ -21,6 +21,7 @@ class EODPrice(WindBase):
             StartDate = self.ini.findInt('EODPrice~StartDate')
         except:
             StartDate = 20070101
+            
         self.sql = "SELECT \
                     WINDDF.ASHAREEODPRICES.S_INFO_WINDCODE AS TICKER, \
                     WINDDF.ASHAREEODPRICES.TRADE_DT AS DT, \
@@ -56,7 +57,19 @@ class EODPrice(WindBase):
         names.remove('DT')
         for ii in names:
             self.df_data                = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname=ii )
+            if ii == 'ADJFACTOR':
+                self.adjfactor = self.df_data.copy()
+            elif ii == 'VOLUME':
+                self.volume = self.df_data.copy()
+            elif ii == 'VWAPSUM':
+                self.vwapsum = self.df_data.copy()
             self.saveFile(ii)
+        adjvolume = self.volume/self.adjfactor
+        self.df_data = adjvolume
+        self.saveFile('ADJVOLUME')
+        adjvwapsum = self.vwapsum*self.adjfactor
+        self.df_data = adjvwapsum
+        self.saveFile('ADJVWAPSUM')
                 
                 
     def saveFile(self, name=''):
@@ -65,11 +78,12 @@ class EODPrice(WindBase):
         except:
             file_dir = './'
         df_data                     = self.screen_estu(self.df_data)
-        date_index                  = [str(ii) for ii in df_data.index.values]
-        stock_columns               = list(df_data.columns.values)
         filename                    = file_dir + '/' + name.lower() + '.bin'
-        save_binary_matrix(filename, df_data.values, date_index, stock_columns)
-        print('Save File:%s' % filename)
+        df_data                     = self.mergeBin(filename,df_data)
+        if name in ['OPEN','HIGH','LOW','CLOSE']:
+            df_data                     = self.screen_estur(df_data,0)
+        df_data = self.mergeIndex(name, df_data)
+        self.saveBinFile(df_data,filename)
     
     def run(self):
         self.timeStart()

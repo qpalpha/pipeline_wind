@@ -12,14 +12,14 @@ class WindBase():
     
     stocklist = pd.DataFrame(columns = ['StartDate','EndDate','Ticker','Type','Info'])
     
-    def __init__(self, ini_file = ''):
+    def __init__(self, ini_file = '', time_type = 'morning'):
         try:
             self.ini = Ini(ini_file)
         except:
             print('No ini file.')
         self.conn = cx_Oracle.connect('windfinc/Abc123@192.168.142.83/van')#这里的顺序是用户名/密码@oracleserver的ip地址/数据库名字
         os.system("export NLS_LANG=AMERICAN_AMERICA.ZHS16GBK") #add this to .bash_profile
-        
+        self.time_type = time_type
 
         
     def getDatabaseData(self):
@@ -81,14 +81,13 @@ class WindBase():
         if len(DataColumns)==0:
             data_array              = np.ones(len(index))
         data_df                     = pd.DataFrame(data_array,index = index)
+        data_df                     = data_df.loc[~data_df.index.duplicated(),:]
         data_mat                    = data_df.unstack(level=0)
         data_mat.columns            = [ticker for ii, ticker in data_mat.columns]
+        #data_mat.index              = [str(ii) for ii in data_mat.index.values]
         return data_mat
     
     def prodf(self, raw_df,columnname='',dataname='' ):
-        print(raw_df.iloc[0,0])
-        if raw_df.iloc[0,0] == '20190620':
-            a=1
         new_df                      = pd.DataFrame(raw_df[dataname].values.reshape([1,-1]), columns = raw_df[columnname])
         return new_df
     
@@ -96,6 +95,7 @@ class WindBase():
         raw_data                    = data[[indexname,columnname,dataname]]
         df_data                     = raw_data.groupby([indexname]).apply(self.prodf,columnname,dataname)
         df_data.reset_index(level=1,drop=True,inplace = True)
+        #df_data.index               = [str(ii) for ii in df_data.index.values]
         return df_data
     
     def saveBinFile(self,data, filename):
@@ -124,19 +124,46 @@ class WindBase():
     def mergeData(self, data1, data2):
         date_list1 = data1.index.values
         date_list2 = data2.index.values
-        date_list1_new = list(set(date_list1).difference(set(date_list2)))
+        date_list2 = [str(ii) for ii in date_list2]
+        diff_set   = set(date_list1).difference(set(date_list2))
+        date_list1_new = [] if not diff_set else list(diff_set)
         data = pd.concat([data1.loc[date_list1_new],data2],axis=0)
+        return data
+    
+    def mergeBin(self, fname, data2):
+        data1 = readm2df(fname)
+        data = self.mergeData(data1, data2)
         return data
     
     def screen_estu(self,df_data,fillna=None):
         df_data.index               = df_data.index.astype(str)
-        estu                        = load_data_dict('estu',dates_type='str')
-        dates                       = list(estu.index&set(df_data.index))
-        dates.sort()
-        df_data                     = pd.DataFrame(df_data,columns=estu.columns,index=dates)
+        estu                        = load_data_dict('estu.a',dates_type='str',fini='../../ini/dir.ini')
+        df_data                     = pd.DataFrame(df_data,columns=estu.columns,index=estu.index)
+        df_data[estu!=1]            = np.nan
         if fillna is not None:
             df_data                 = df_data.fillna(fillna)
+        return df_data
+    
+    def screen_estur(self,df_data,fillna=None):
+        df_data.index               = df_data.index.astype(str)
+        estu                        = load_data_dict('estu.r',dates_type='str',fini='../../ini/dir.ini')
+        df_data                     = pd.DataFrame(df_data,columns=estu.columns,index=estu.index)
+        dates                       = df_data.index
         df_data[~(estu.loc[dates,:]==1)] = np.nan
+        if fillna is not None:
+            df_data                 = df_data.fillna(fillna)
+        return df_data
+    
+    def mergeIndex(self, name, df_data):
+        df_data.index               = df_data.index.astype(str)
+        merge_name = ['open','high','low','close','change','pctchange','volume','amount']
+        for ii in merge_name:
+            if ii in name.lower():
+                data_index = load_data_dict('i'+ii,dates_type='str',fini='../../ini/dir.ini')
+                IndexName = self.ini.findStringVec('IndexName')
+                for jj in IndexName:
+                    if jj in data_index.columns.values:
+                        df_data[jj] = data_index[jj]
         return df_data
 
     def run(self):
@@ -149,7 +176,6 @@ class WindBase():
 #%%
 def load_data_dict(field,ini=None,fini=None,fill0=None,dates_type='int'):
     if fini is None:
-#        fini = '../../common/cn.eq.base.ini'
         fini = '/qp/data/ini/cn.eq.base.ini'
     if ini is None:
         ini = Ini(fini)
@@ -199,7 +225,7 @@ def asset_returns(tickers=None,dates=None,rolling_window=1,ret_type='realized'):
         dates0 = dates_all[dates_all<=edate]
         dates1 = dates_all[dates_all>=esdate]
         index_dates = dates0
-    price = load_data_dict('adjusted_close',fill0=np.nan)
+    price = load_data_dict('adjusted_close',fill0=np.nan,fini='../../ini/dir.ini')
     price = price.loc[dates_all,:]
     if tickers is not None:
         price = price.loc[:,tickers]

@@ -13,14 +13,15 @@ import dates
 import warnings
 warnings.filterwarnings('ignore')
 
-class estu(WindBase):
+class estu_a(WindBase):
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
-        self.type = 'estu'
+        self.type = 'estu.a'
         try:
-            self.StartDate = self.ini.findInt('estu~StartDate')
+            self.StartDate = self.ini.findInt('estu.a~StartDate')
         except:
             self.StartDate = 20070101
+        self.index_list = self.ini.findStringVec('IndexName')
         self.EndDate = dates.today()
         self.sql = "SELECT \
                     WINDDF.ASHAREDESCRIPTION.S_INFO_WINDCODE AS TICKER, \
@@ -55,22 +56,22 @@ class estu(WindBase):
         data_df                     = pd.DataFrame(np.ones(len(index)),index = index)
         data_mat                    = data_df.unstack(level=0)
         data_mat.columns            = [ticker for ii, ticker in data_mat.columns]
+        for ii in self.index_list:
+            data_mat[ii] = 0
         self.df_data = data_mat         
                 
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('estu~Outdir')
+            file_dir = self.ini.findString('estu.a~Outdir')
         except:
             file_dir = './'
         df_data                     = self.df_data
-        date_index                  = [str(ii) for ii in df_data.index.values]
-        stock_columns               = list(df_data.columns.values)
-        filename                    = file_dir + '/' + 'estu' + '.bin'
-        save_binary_matrix(filename, df_data.values, date_index, stock_columns)
-        print('Save File:%s' % filename)
+        filename                    = file_dir + '/' + 'estu.a' + '.bin'
+        df_data                     = self.mergeBin(filename,df_data)
+        self.saveBinFile(df_data,filename)
     
                 
 
 if __name__ == '__main__':
-    a = estu('estu.ini')
+    a = estu_a('estu.a.ini')
     a.run()

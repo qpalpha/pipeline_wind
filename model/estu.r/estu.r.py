@@ -22,15 +22,34 @@ class estu_r(WindBase):
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
+        self.sql = "SELECT \
+            WINDDF.ASHAREEODPRICES.S_INFO_WINDCODE AS TICKER, \
+            WINDDF.ASHAREEODPRICES.TRADE_DT AS DT, \
+            WINDDF.ASHAREEODPRICES.S_DQ_AMOUNT AS AMOUNT \
+            FROM \
+            WINDDF.ASHAREEODPRICES \
+            WHERE \
+            WINDDF.ASHAREEODPRICES.TRADE_DT > %s \
+            ORDER BY \
+            WINDDF.ASHAREEODPRICES.TRADE_DT ASC, \
+            WINDDF.ASHAREEODPRICES.S_INFO_WINDCODE ASC" % self.StartDate
+        
 
-    def getDatabaseData(self):
-        estu                        = load_data_dict('estu')
-        stop                        = load_data_dict('stop')
-        estu[stop>0]                = np.nan
-        self.my_data_pd             = estu
 
     def processData(self):
-        self.df_data                = self.my_data_pd
+        raw_data                    = self.my_data_pd
+        raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])
+        names                       = raw_data.columns.values.tolist()
+        names.remove('TICKER')
+        names.remove('DT')
+        amount                      = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname='AMOUNT' )
+        estu                        = load_data_dict('estu.a',fini='../../ini/dir.ini',dates_type='str')
+        stop                        = load_data_dict('stop',fini='../../ini/dir.ini',dates_type='str')
+        estu[stop==1]               = np.nan
+        estu[amount!=amount]        = np.nan
+        estu                        = estu.fillna(0)
+        self.df_data                = estu
+
         
                 
     def saveFile(self):
@@ -39,11 +58,9 @@ class estu_r(WindBase):
         except:
             file_dir = './'
         df_data                     = self.df_data
-        date_index                  = [str(ii) for ii in df_data.index.values]
-        stock_columns               = list(df_data.columns.values)
         filename                    = file_dir + '/' + 'estu.r.bin'
-        save_binary_matrix(filename, df_data.values, date_index, stock_columns)
-        print('Save File:%s' % filename)
+        df_data                     = self.mergeBin(filename,df_data)
+        self.saveBinFile(df_data,filename)
     
                 
 

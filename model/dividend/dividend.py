@@ -27,14 +27,14 @@ class dividend(WindBase):
         self.sql = '''
             select  
                 S_INFO_WINDCODE as ticker,
-                STK_DVD_PER_SH,
+                CASH_DVD_PER_SH_AFTER_TAX,
                 EX_DT as DT
             from
                 winddf.AShareDividend
             where
                 EX_DT is not null and
                 EX_DT>={} and 
-                STK_DVD_PER_SH>0
+                CASH_DVD_PER_SH_PRE_TAX>0
             order by 
                 EX_DT,ticker
             '''.format(self.StartDate)
@@ -43,6 +43,8 @@ class dividend(WindBase):
     def processData(self):
         raw_data                    = self.my_data_pd
         raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])
+        raw_data                    = raw_data.groupby(['TICKER','DT']).sum().reset_index()
+
         names                       = raw_data.columns.values.tolist()
         names.remove('TICKER')
         names.remove('DT')
@@ -55,6 +57,7 @@ class dividend(WindBase):
             file_dir = './'
         df_data                     = self.screen_estu(self.df_data)
         filename                    = file_dir + '/' + self.file_name + '.bin'
+        df_data                     = self.mergeBin(filename,df_data)
         self.saveBinFile(df_data,filename)
 
 if __name__ == '__main__':

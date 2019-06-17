@@ -35,6 +35,7 @@ class delisted(WindBase):
                     WINDDF.ASHAREPREVIOUSNAME.CHANGEREASON = 200036000 \
                     ORDER BY \
                     WINDDF.ASHAREPREVIOUSNAME.BEGINDATE ASC"
+
         
     def processData(self):
         raw_data                    = self.my_data_pd

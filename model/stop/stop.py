@@ -33,7 +33,7 @@ class stop(WindBase):
                     FROM \
                     WINDDF.ASHARETRADINGSUSPENSION \
                     WHERE \
-                    WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDTYPE = 444016000 AND \
+                    WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDTYPE in (444016000,444003000) AND \
                     WINDDF.ASHARETRADINGSUSPENSION.S_DQ_SUSPENDDATE >= %s \
                     ORDER BY \
                     BEGINDATE ASC" % self.StartDate
@@ -51,6 +51,7 @@ class stop(WindBase):
             file_dir = './'
         filename                    = file_dir + '/' + self.stop_name + '.bin'
         df_data                     = self.screen_estu(self.df_data)
+        df_data                     = self.mergeBin(filename,df_data)
         self.saveBinFile(df_data,filename)
 
 
