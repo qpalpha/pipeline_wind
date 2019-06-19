@@ -15,12 +15,13 @@ warnings.filterwarnings('ignore')
 
 class ConWeight(WindBase):
     
-    def __init__(self, ini_file = ''):
+    def __init__(self, ini_file = '',index='csi300'):
         WindBase.__init__(self, ini_file)
-        self.name             = self.ini.findString('Name')
-        self.index_ticker     = self.ini.findString('IndexTicker')
+        self.index_str  = 'ConWeight.'+index
+        self.name             = self.ini.findString(self.index_str+'~Name')
+        self.index_ticker     = self.ini.findString(self.index_str+'~IndexTicker')
         try:
-            StartDate               = self.ini.findInt('StartDate')
+            StartDate               = self.ini.findInt(self.index_str+'~StartDate')
             self.StartDate          = dates._date_offset(StartDate,32)
         except:
             self.StartDate          = 20080101
@@ -89,5 +90,7 @@ if __name__ == '__main__':
         fini = sys.argv[1]
     except:
         fini = 'csi500_wt.ini'
-    a = ConWeight(fini)
+    a = ConWeight(fini,index='csi300')
+    a.run()
+    a = ConWeight(fini,index='csi500')
     a.run()

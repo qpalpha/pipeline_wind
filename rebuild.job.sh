@@ -7,10 +7,10 @@
 #Created Time:  2019-06-14 09:02:40
 ####################################
 
-echo '----------------- [Night] Basic Pipeline Starts -----------------'
+echo '----------------- [Rebuild] Basic Pipeline Starts -----------------'
 
 MAIN_DIR=/e/qp.test/pipeline_wind/model
-INI=/e/qp.test/pipeline_wind/ini/job.update.ini
+INI=/e/qp.test/pipeline_wind/ini/job.rebuild.ini
 
 # TradeDate
 echo '* TradeDate'
@@ -75,7 +75,7 @@ python EODPrice.py $INI
 #PreAdjPrice
 echo '* PreAdjPrice'
 cd $MAIN_DIR/PreAdjPrice
-python PreAdjPrice.py $INI night
+python PreAdjPrice.py $INI
 
 #EODIndex
 echo '* EODIndex'
@@ -102,4 +102,4 @@ echo '* indzx'
 cd $MAIN_DIR/indzx
 python indzx.py $INI
 
-echo '----------------- [Night] Basic Pipeline Ends -----------------'
+echo '----------------- [Rebuild] Basic Pipeline Ends -----------------'

@@ -42,5 +42,9 @@ class TradeDate(WindBase):
                 
 
 if __name__ == '__main__':
-    a = TradeDate('TradeDate.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'TradeDate.ini'
+    a = TradeDate(fini)
     a.run()

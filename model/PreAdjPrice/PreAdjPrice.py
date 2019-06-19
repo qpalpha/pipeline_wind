@@ -27,7 +27,7 @@ class estu_r(WindBase):
 
         
     def getDatabaseData(self):
-        adj_factor  = load_data_dict('adjfactor',fini='../../ini/dir.ini',dates_type='str')
+        adj_factor  = load_data_dict('adjfactor',fini=self.dict_ini,dates_type='str')
         if self.time_type == 'morning':
             close_sql   =    'SELECT \
                             WINDDF.ASHAREEODPRICES.S_INFO_WINDCODE AS TICKER, \
@@ -43,8 +43,8 @@ class estu_r(WindBase):
             close       = pd.read_sql(close_sql, self.conn)
             close['TICKER']          = self.convertWindCode(close['TICKER'])
             close_df    = self.processDailyData(close, indexname='DT',columnname='TICKER',dataname='CLOSE' )
-            split       = load_data_dict('split',fini='../../ini/dir.ini',dates_type='str')
-            div         = load_data_dict('dividend',fini='../../ini/dir.ini',dates_type='str')
+            split       = load_data_dict('split',fini=self.dict_ini,dates_type='str')
+            div         = load_data_dict('dividend',fini=self.dict_ini,dates_type='str')
             div         = div.fillna(0)
             today       = str(dates.pre_date_offset(self.EndDate,0))
             yesterday   = str(dates.pre_date_offset(self.EndDate,-1))
@@ -54,22 +54,21 @@ class estu_r(WindBase):
         
 
     def processData(self):
-        adj_factor  = load_data_dict('adjfactor',fini='../../ini/dir.ini',dates_type='str')
+        adj_factor  = load_data_dict('adjfactor',fini=self.dict_ini,dates_type='str')
         pre_adj_factor = self.pre_adj_factor
         names = ['OPEN','HIGH','LOW','CLOSE','VOLUME','VWAPSUM']
         for ii in names:
-            adj_name = 'ADJ'+ii
-            adj_data = load_data_dict(adj_name,fini='../../ini/dir.ini',dates_type='str')
-            data = adj_data/adj_factor
+            adj_name = ii
+            data = load_data_dict(adj_name,fini=self.dict_ini,dates_type='str')
             pre_adj_data = data * pre_adj_factor
             if ii == 'VOLUME':
-                data = load_data_dict(ii,fini='../../ini/dir.ini',dates_type='str')
+                data = load_data_dict(ii,fini=self.dict_ini,dates_type='str')
                 pre_adj_data = data / pre_adj_factor
             if self.time_type == 'morning':
                 pre_adj_data.drop([self.today])
             self.df_data = pre_adj_data
             self.saveFile('preadj'+ii.lower())
-        self.df_data = pre_adj_data
+        self.df_data = pre_adj_factor
         self.saveFile('preadjfactor')
             
                 
@@ -95,5 +94,11 @@ class estu_r(WindBase):
                 
 
 if __name__ == '__main__':
-    a = estu_r('PreAdjPrice.ini')
+    try:
+        fini = sys.argv[1]
+        time_type = sys.argv[2]
+    except:
+        fini = 'PreAdjPrice.ini'
+        time_type = 'morning'
+    a = estu_r(fini,time_type)
     a.run()

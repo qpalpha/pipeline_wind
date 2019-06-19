@@ -18,9 +18,9 @@ class split(WindBase):
     
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
-        self.file_name = self.ini.findString('Name')
+        self.file_name = self.ini.findString('split~Name')
         try:
-            self.StartDate = self.ini.findInt('StartDate')
+            self.StartDate = self.ini.findInt('split~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
@@ -55,7 +55,7 @@ class split(WindBase):
                 
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('Outdir')
+            file_dir = self.ini.findString('split~Outdir')
         except:
             file_dir = './'
         df_data                     = self.screen_estu(self.df_data,fillna=1)
@@ -64,5 +64,9 @@ class split(WindBase):
         self.saveBinFile(df_data,filename)
 
 if __name__ == '__main__':
-    a = split('split.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'split.ini'
+    a = split(fini)
     a.run()

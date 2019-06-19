@@ -57,5 +57,9 @@ class st(WindBase):
                 
 
 if __name__ == '__main__':
-    a = st('st.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'st.ini'
+    a = st(fini)
     a.run()

@@ -18,7 +18,7 @@ class estu_r(WindBase):
         WindBase.__init__(self, ini_file)
         self.type = 'estu'
         try:
-            self.StartDate = self.ini.findInt('StartDate')
+            self.StartDate = self.ini.findInt('estu.r~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
@@ -43,8 +43,8 @@ class estu_r(WindBase):
         names.remove('TICKER')
         names.remove('DT')
         amount                      = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',dataname='AMOUNT' )
-        estu                        = load_data_dict('estu.a',fini='../../ini/dir.ini',dates_type='str')
-        stop                        = load_data_dict('stop',fini='../../ini/dir.ini',dates_type='str')
+        estu                        = load_data_dict('estu.a',fini=self.dict_ini,dates_type='str')
+        stop                        = load_data_dict('stop',fini=self.dict_ini,dates_type='str')
         estu[stop==1]               = np.nan
         estu[amount!=amount]        = np.nan
         estu                        = estu.fillna(0)
@@ -54,7 +54,7 @@ class estu_r(WindBase):
                 
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('Outdir')
+            file_dir = self.ini.findString('estu.r~Outdir')
         except:
             file_dir = './'
         df_data                     = self.df_data
@@ -65,5 +65,9 @@ class estu_r(WindBase):
                 
 
 if __name__ == '__main__':
-    a = estu_r('estu.r.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'estu.r.ini'
+    a = estu_r(fini)
     a.run()

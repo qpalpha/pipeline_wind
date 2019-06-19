@@ -18,9 +18,9 @@ class dividend(WindBase):
     
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
-        self.file_name = self.ini.findString('dividend~Name')
+        self.file_name = self.ini.findString('dividend2~Name')
         try:
-            self.StartDate = self.ini.findInt('dividend~StartDate')
+            self.StartDate = self.ini.findInt('dividend2~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
@@ -52,7 +52,7 @@ class dividend(WindBase):
                 
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('dividend~Outdir')
+            file_dir = self.ini.findString('dividend2~Outdir')
         except:
             file_dir = './'
         df_data                     = self.screen_estu(self.df_data)
@@ -61,5 +61,9 @@ class dividend(WindBase):
         self.saveBinFile(df_data,filename)
 
 if __name__ == '__main__':
-    a = dividend('dividend.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'dividend.ini'
+    a = dividend(fini)
     a.run()

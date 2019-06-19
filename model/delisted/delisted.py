@@ -53,7 +53,7 @@ class delisted(WindBase):
         sql = '''
         select S_INFO_WINDCODE as ticker,S_IPO_LISTDATE as dt from winddf.AShareIPO order by S_INFO_WINDCODE
         '''
-        estu                        = load_data_dict('estu.a',fini='../../ini/dir.ini')
+        estu                        = load_data_dict('estu.a',fini=self.dict_ini)
         ipo_date = pd.read_sql(sql, self.conn).dropna()
         ipo_date['TICKER']          = ipo_date['TICKER'].apply(lambda s:s[:6])
         ipo_date['DT']              = ipo_date['DT'].astype(int).clip(lower=estu.index[0])

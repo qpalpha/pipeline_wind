@@ -67,39 +67,39 @@ echo '* delisted'
 cd $MAIN_DIR/delisted
 python delisted.py $INI
 
-#EODPrice
-echo '* EODPrice'
-cd $MAIN_DIR/EODPrice
-python EODPrice.py $INI
+##EODPrice
+#echo '* EODPrice'
+#cd $MAIN_DIR/EODPrice
+#python EODPrice.py $INI
 
 #PreAdjPrice
 echo '* PreAdjPrice'
 cd $MAIN_DIR/PreAdjPrice
-python PreAdjPrice.py $INI night
+python PreAdjPrice.py $INI morning
 
-#EODIndex
-echo '* EODIndex'
-cd $MAIN_DIR/EODIndex
-python EODIndex.py $INI
-
-#index
-echo '* index'
-cd $MAIN_DIR/index
-python Index.py $INI
-
-#ConWeight
-echo '* ConWeight'
-cd $MAIN_DIR/ConWeight
-python ConWeight.py $INI
-
-#Other
-echo '* other'
-cd $MAIN_DIR/other
-python other.py $INI
-
-#indzx
-echo '* indzx'
-cd $MAIN_DIR/indzx
-python indzx.py $INI
+##EODIndex
+#echo '* EODIndex'
+#cd $MAIN_DIR/EODIndex
+#python EODIndex.py $INI
+#
+##index
+#echo '* index'
+#cd $MAIN_DIR/index
+#python Index.py $INI
+#
+##ConWeight
+#echo '* ConWeight'
+#cd $MAIN_DIR/ConWeight
+#python ConWeight.py $INI
+#
+##Other
+#echo '* other'
+#cd $MAIN_DIR/other
+#python other.py $INI
+#
+##indzx
+#echo '* indzx'
+#cd $MAIN_DIR/indzx
+#python indzx.py $INI
 
 echo '----------------- [Night] Basic Pipeline Ends -----------------'

@@ -73,5 +73,9 @@ class estu_a(WindBase):
                 
 
 if __name__ == '__main__':
-    a = estu_a('estu.a.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'estu.a.ini'
+    a = estu_a(fini)
     a.run()

@@ -60,6 +60,7 @@ class EODPrice(WindBase):
             if ii == 'ADJFACTOR':
                 self.adjfactor = self.df_data.copy()
             elif ii == 'VOLUME':
+                self.df_data = self.df_data*100
                 self.volume = self.df_data.copy()
             elif ii == 'VWAPSUM':
                 self.vwapsum = self.df_data.copy()
@@ -80,8 +81,11 @@ class EODPrice(WindBase):
         df_data                     = self.screen_estu(self.df_data)
         filename                    = file_dir + '/' + name.lower() + '.bin'
         df_data                     = self.mergeBin(filename,df_data)
-        if name in ['OPEN','HIGH','LOW','CLOSE']:
+        if name in ['OPEN','HIGH','LOW','CLOSE','VWAPSUM']:
+            df_data = self.mergeIndex(name, df_data)
+            self.saveBinFile(df_data,filename)
             df_data                     = self.screen_estur(df_data,0)
+            filename                    = file_dir + '/u' + name.lower() + '.bin'
         df_data = self.mergeIndex(name, df_data)
         self.saveBinFile(df_data,filename)
     
@@ -93,5 +97,9 @@ class EODPrice(WindBase):
                 
 
 if __name__ == '__main__':
-    a = EODPrice('EODPrice.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'EODPrice.ini'
+    a = EODPrice(fini)
     a.run()

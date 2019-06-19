@@ -19,7 +19,7 @@ class shares(WindBase):
     def __init__(self, ini_file = ''):
         WindBase.__init__(self, ini_file)
         try:
-            self.StartDate = self.ini.findInt('StartDate')
+            self.StartDate = self.ini.findInt('shares~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
@@ -62,7 +62,7 @@ class shares(WindBase):
     def saveFile(self, name=''):
         if name:
             try:
-                file_dir = self.ini.findString('Outdir')
+                file_dir = self.ini.findString('shares~Outdir')
             except:
                 file_dir = './'
             df_data                     = self.screen_estu(self.df_data)
@@ -72,5 +72,9 @@ class shares(WindBase):
     
     
 if __name__ == '__main__':
-    a = shares('shares.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'shares.ini'
+    a = shares(fini)
     a.run()

@@ -21,7 +21,7 @@ import datetime
 #%%
 def all_trade_dates():
 #    file = '/qp/data/platform_objects/core/trade.date.txt'
-    file = '../../trade.date.txt'
+    file = '/e/qp.test/data1/trade.date.txt'
     return pd.read_csv(file,header=None,squeeze=True).values
 
 def _date_offset(date,offset=-1):

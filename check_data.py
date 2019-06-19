@@ -7,8 +7,8 @@ Created on Wed Jun 12 14:04:02 2019
 """
 from qp import *
 import numpy as np
-data_new = readm2df('../data/st.bin')
-data     = readm2df('/qp/data/platform_objects/core/st.bin')
+data_new = readm2df('../data/liq21.bin')
+data     = readm2df('/qp/data/platform_objects/core/liq21.bin')
 #data_new = data_new.fillna(0)
 
 stock_more = list(set(data_new.columns.values).difference(set(data.columns.values)))

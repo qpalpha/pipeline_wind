@@ -20,7 +20,7 @@ class WindBase():
         self.conn = cx_Oracle.connect('windfinc/Abc123@192.168.142.83/van')#这里的顺序是用户名/密码@oracleserver的ip地址/数据库名字
         os.system("export NLS_LANG=AMERICAN_AMERICA.ZHS16GBK") #add this to .bash_profile
         self.time_type = time_type
-
+        self.dict_ini = self.ini.findString('dict_ini')
         
     def getDatabaseData(self):
         self.my_data_pd = pd.read_sql(self.sql, self.conn)

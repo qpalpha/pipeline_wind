@@ -61,5 +61,9 @@ class dividend(WindBase):
         self.saveBinFile(df_data,filename)
 
 if __name__ == '__main__':
-    a = dividend('dividend.ini')
+    try:
+        fini = sys.argv[1]
+    except:
+        fini = 'dividend.ini'
+    a = dividend(fini)
     a.run()

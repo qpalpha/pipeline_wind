@@ -15,15 +15,15 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class Index(WindBase):
-    
-    
-    def __init__(self, ini_file = ''):
+    def __init__(self, ini_file = '',index='csi300'):
         WindBase.__init__(self, ini_file)
         self.type       = 'Index'
-        self.index_name = self.ini.findString('Index~Name')
-        self.index_code = self.ini.findString('Index~Code')
+        self.index_str  = 'Index.'+index
+        self.index_name = self.ini.findString(self.index_str+'~Name')
+        index.csi300
+        self.index_code = self.ini.findString(self.index_str+'~Code')
         try:
-            self.StartDate = self.ini.findInt('Index~StartDate')
+            self.StartDate = self.ini.findInt(self.index_str+'~StartDate')
         except:
             self.StartDate = 20070101
         self.EndDate = dates.today()
@@ -46,7 +46,7 @@ class Index(WindBase):
         
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('Index~Outdir')
+            file_dir = self.ini.findString(self.index_str+'~Outdir')
         except:
             file_dir = './'
         filename                    = file_dir + '/' + self.index_name + '.bin'
@@ -60,5 +60,7 @@ if __name__ == '__main__':
         fini = sys.argv[1]
     except:
         fini = 'csi300.ini'
-    a = Index(fini)
+    a = Index(fini,index='csi300')
+    a.run()
+    a = Index(fini,index='csi500')
     a.run()
