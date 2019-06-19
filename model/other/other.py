@@ -80,6 +80,7 @@ class other(WindBase):
         
         # 21 day median adjusted volume
         preadjvolume  = load_data_dict('preadjvolume',fini=self.dict_ini,dates_type='str')
+        preadjvolume[preadjvolume==0]= np.nan
         mean_volume = pd.rolling_median(preadjvolume, 21, min_periods=1)
         mean_volume.fillna(0, inplace=True)
         self.df_data = mean_volume
@@ -161,6 +162,7 @@ if __name__ == '__main__':
     try:
         fini = sys.argv[1]
     except:
-        fini = 'other.ini'
+#        fini = 'other.ini'
+        fini = '/e/qp.test/pipeline_wind/ini/job.update.ini'
     a = other(fini)
     a.run()
