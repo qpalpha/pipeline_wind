@@ -79,9 +79,10 @@ class estu_r(WindBase):
             file_dir = self.ini.findString('PreAdjPrice~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
+        
         filename                    = file_dir + '/' + name.lower() + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         df_data = self.mergeIndex(name, df_data)
         self.saveBinFile(df_data,filename)
         
@@ -98,7 +99,8 @@ if __name__ == '__main__':
         fini = sys.argv[1]
         time_type = sys.argv[2]
     except:
-        fini = 'PreAdjPrice.ini'
+#        fini = 'PreAdjPrice.ini'
+        fini = '/e/qp.test/pipeline_wind/ini/job.update.ini'
         time_type = 'morning'
     a = estu_r(fini,time_type)
     a.run()

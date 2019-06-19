@@ -55,9 +55,9 @@ class dividend(WindBase):
             file_dir = self.ini.findString('dividend2~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
         filename                    = file_dir + '/' + self.file_name + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         self.saveBinFile(df_data,filename)
 
 if __name__ == '__main__':

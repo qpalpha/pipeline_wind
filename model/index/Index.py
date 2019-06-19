@@ -20,7 +20,6 @@ class Index(WindBase):
         self.type       = 'Index'
         self.index_str  = 'Index.'+index
         self.index_name = self.ini.findString(self.index_str+'~Name')
-        index.csi300
         self.index_code = self.ini.findString(self.index_str+'~Code')
         try:
             self.StartDate = self.ini.findInt(self.index_str+'~StartDate')
@@ -50,8 +49,8 @@ class Index(WindBase):
         except:
             file_dir = './'
         filename                    = file_dir + '/' + self.index_name + '.bin'
-        df_data                     = self.screen_estu(self.df_data)
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         self.saveBinFile(df_data,filename)
 
 

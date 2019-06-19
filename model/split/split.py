@@ -58,9 +58,10 @@ class split(WindBase):
             file_dir = self.ini.findString('split~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data,fillna=1)
+        
         filename                    = file_dir + '/' + self.file_name + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data,fillna=1)
         self.saveBinFile(df_data,filename)
 
 if __name__ == '__main__':

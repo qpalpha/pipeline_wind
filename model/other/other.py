@@ -43,11 +43,17 @@ class other(WindBase):
         
         #总市值 market cap in RMB = unadjusted_close * 总股本
         shares  = load_data_dict('shares_outstanding',fini=self.dict_ini,dates_type='str')
-        adjfactor  = load_data_dict('adjfactor',fini=self.dict_ini,dates_type='str')
-        adjclose  = load_data_dict('adjclose',fini=self.dict_ini,dates_type='str')
-        cap = (adjclose/adjfactor) *shares
+        close  = load_data_dict('close',fini=self.dict_ini,dates_type='str')
+        cap = close*shares
         self.df_data = cap
-        self.saveFile('cap')       
+        self.saveFile('cap') 
+        
+        #float市值 market cap in RMB = unadjusted_close * shares_float
+        shares_float  = load_data_dict('shares_float',fini=self.dict_ini,dates_type='str')
+        close  = load_data_dict('close',fini=self.dict_ini,dates_type='str')
+        cap2 = close *shares_float
+        self.df_data = cap2
+        self.saveFile('cap2')      
         
         # turnover
         shares1  = load_data_dict('shares_float',fini=self.dict_ini,dates_type='str')
@@ -84,37 +90,37 @@ class other(WindBase):
         self.df_data = mean_volume
         self.saveFile('mdv101') 
             
-        # 股息率=一年的总派息额与当时市价的比例 eg.div.ratio['20180706','600336']= 0
-        self.sql = '''
-            select  
-                S_INFO_WINDCODE as ticker,
-                REPORT_PERIOD,
-                EX_DT as DT
-            from
-                winddf.AShareDividend
-            where
-                EX_DT is not null and
-                EX_DT>={} and 
-                CASH_DVD_PER_SH_PRE_TAX>0
-            order by 
-                EX_DT,ticker
-            '''.format(self.StartDate)
-        raw_data                    = pd.read_sql(self.sql, self.conn)
-        raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])
-        raw_data                    = raw_data.groupby(['TICKER','DT']).apply(lambda x:x.iloc[0,:]).reset_index(drop=True)
-        raw_data['REPORT_PERIOD']   = np.floor(raw_data['REPORT_PERIOD'].astype(int)/1e4)
-        names                       = raw_data.columns.values.tolist()
-        names.remove('TICKER')
-        names.remove('DT')
-        div_year                    = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',\
-                                                       dataname=names[0]).fillna(0)
-        dividend  = load_data_dict('dividend',fini=self.dict_ini,dates_type='str')
-        dividend2  = load_data_dict('dividend2',fini=self.dict_ini,dates_type='str')
-        
-        self.df_data = self.cal_div_ratio(div_year,dividend,shares,cap)
-        self.saveFile('div.ratio1') 
-        self.df_data = self.cal_div_ratio(div_year,dividend2,shares,cap)
-        self.saveFile('div.ratio2') 
+#        # 股息率=一年的总派息额与当时市价的比例 eg.div.ratio['20180706','600336']= 0
+#        self.sql = '''
+#            select  
+#                S_INFO_WINDCODE as ticker,
+#                REPORT_PERIOD,
+#                EX_DT as DT
+#            from
+#                winddf.AShareDividend
+#            where
+#                EX_DT is not null and
+#                EX_DT>={} and 
+#                CASH_DVD_PER_SH_PRE_TAX>0
+#            order by 
+#                EX_DT,ticker
+#            '''.format(self.StartDate)
+#        raw_data                    = pd.read_sql(self.sql, self.conn)
+#        raw_data['TICKER']          = self.convertWindCode(raw_data['TICKER'])
+#        raw_data                    = raw_data.groupby(['TICKER','DT']).apply(lambda x:x.iloc[0,:]).reset_index(drop=True)
+#        raw_data['REPORT_PERIOD']   = np.floor(raw_data['REPORT_PERIOD'].astype(int)/1e4)
+#        names                       = raw_data.columns.values.tolist()
+#        names.remove('TICKER')
+#        names.remove('DT')
+#        div_year                    = self.processDailyData(raw_data, indexname='DT',columnname='TICKER',\
+#                                                       dataname=names[0]).fillna(0)
+#        dividend  = load_data_dict('dividend',fini=self.dict_ini,dates_type='str')
+#        dividend2  = load_data_dict('dividend2',fini=self.dict_ini,dates_type='str')
+#        
+#        self.df_data = self.cal_div_ratio(div_year,dividend,shares,cap)
+#        self.saveFile('div.ratio1') 
+#        self.df_data = self.cal_div_ratio(div_year,dividend2,shares,cap)
+#        self.saveFile('div.ratio2') 
         
         
     def cal_div_ratio(self,div_year,dividend,shares,cap):
@@ -137,9 +143,9 @@ class other(WindBase):
             file_dir = self.ini.findString('other~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
         filename                    = file_dir + '/' + name.lower() + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         df_data = self.mergeIndex(name, df_data)
         self.saveBinFile(df_data,filename)
         

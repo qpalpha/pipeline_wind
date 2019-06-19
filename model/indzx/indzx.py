@@ -44,8 +44,8 @@ class indzx(WindBase):
         except:
             file_dir = './'
         filename                    = file_dir + '/' + self.indzx_name + '.bin'
-        df_data                     = self.screen_estu(self.df_data)
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         self.saveBinFile(df_data,filename)
 
 

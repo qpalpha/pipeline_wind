@@ -69,17 +69,19 @@ class ConWeight(WindBase):
             data_mat2.iloc[si:ei,:] = data_i*multiplier
         # Capture data of trade_dates
         data_mat                    = data_mat2.loc[trade_dates,:]
-        data_mat                    = data_mat.div(data_mat.sum(axis=1),axis=0)
+        data_sum                    = data_mat.sum(axis=1)
+        data_sum[data_sum==0]       = 1e10
+        data_mat                    = data_mat.div(data_sum,axis=0)
         self.df_data = data_mat*100        
         
     def saveFile(self):
         try:
-            file_dir = self.ini.findString('Outdir')
+            file_dir = self.ini.findString(self.index_str+'~Outdir')
         except:
             file_dir = './'
         filename                    = file_dir + '/' + self.name + '.bin'
-        df_data                     = self.screen_estu(self.df_data)
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         df_data.fillna(0,inplace=True)
         
         self.saveBinFile(df_data,filename)
@@ -89,7 +91,7 @@ if __name__ == '__main__':
     try:
         fini = sys.argv[1]
     except:
-        fini = 'csi500_wt.ini'
+        fini = 'csi300_wt.ini'
     a = ConWeight(fini,index='csi300')
     a.run()
     a = ConWeight(fini,index='csi500')

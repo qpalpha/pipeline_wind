@@ -124,9 +124,11 @@ class WindBase():
     def mergeData(self, data1, data2):
         date_list1 = data1.index.values
         date_list2 = data2.index.values
+        date_list1 = [str(ii) for ii in date_list1]
         date_list2 = [str(ii) for ii in date_list2]
         diff_set   = set(date_list1).difference(set(date_list2))
         date_list1_new = [] if not diff_set else list(diff_set)
+        date_list1_new.sort()
         data = pd.concat([data1.loc[date_list1_new],data2],axis=0)
         return data
     
@@ -137,7 +139,7 @@ class WindBase():
     
     def screen_estu(self,df_data,fillna=None):
         df_data.index               = df_data.index.astype(str)
-        estu                        = load_data_dict('estu.a',dates_type='str',fini='../../ini/dir.ini')
+        estu                        = load_data_dict('estu.a',dates_type='str',fini=self.dict_ini)
         df_data                     = pd.DataFrame(df_data,columns=estu.columns,index=estu.index)
         df_data[estu!=1]            = np.nan
         if fillna is not None:
@@ -146,7 +148,7 @@ class WindBase():
     
     def screen_estur(self,df_data,fillna=None):
         df_data.index               = df_data.index.astype(str)
-        estu                        = load_data_dict('estu.r',dates_type='str',fini='../../ini/dir.ini')
+        estu                        = load_data_dict('estu.r',dates_type='str',fini=self.dict_ini)
         df_data                     = pd.DataFrame(df_data,columns=estu.columns,index=estu.index)
         dates                       = df_data.index
         df_data[~(estu.loc[dates,:]==1)] = np.nan
@@ -159,7 +161,7 @@ class WindBase():
         merge_name = ['open','high','low','close','change','pctchange','volume','amount']
         for ii in merge_name:
             if ii in name.lower():
-                data_index = load_data_dict('i'+ii,dates_type='str',fini='../../ini/dir.ini')
+                data_index = load_data_dict('i'+ii,dates_type='str',fini=self.dict_ini)
                 IndexName = self.ini.findStringVec('IndexName')
                 for jj in IndexName:
                     if jj in data_index.columns.values:

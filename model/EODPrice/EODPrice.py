@@ -21,7 +21,7 @@ class EODPrice(WindBase):
             StartDate = self.ini.findInt('EODPrice~StartDate')
         except:
             StartDate = 20070101
-            
+
         self.sql = "SELECT \
                     WINDDF.ASHAREEODPRICES.S_INFO_WINDCODE AS TICKER, \
                     WINDDF.ASHAREEODPRICES.TRADE_DT AS DT, \
@@ -37,9 +37,9 @@ class EODPrice(WindBase):
                     WINDDF.ASHAREEODPRICES.S_DQ_ADJHIGH AS ADJHIGH, \
                     WINDDF.ASHAREEODPRICES.S_DQ_ADJLOW AS ADJLOW, \
                     WINDDF.ASHAREEODPRICES.S_DQ_ADJCLOSE AS ADJCLOSE, \
+                    WINDDF.ASHAREEODPRICES.S_DQ_VOLUME AS VOLUME, \
                     WINDDF.ASHAREEODPRICES.S_DQ_ADJFACTOR AS ADJFACTOR, \
-                    WINDDF.ASHAREEODPRICES.S_DQ_AVGPRICE AS VWAPSUM, \
-                    WINDDF.ASHAREEODPRICES.S_DQ_TRADESTATUS AS TRADESTATUS \
+                    WINDDF.ASHAREEODPRICES.S_DQ_AVGPRICE AS VWAPSUM \
                     FROM \
                     WINDDF.ASHAREEODPRICES \
                     WHERE \
@@ -65,6 +65,9 @@ class EODPrice(WindBase):
             elif ii == 'VWAPSUM':
                 self.vwapsum = self.df_data.copy()
             self.saveFile(ii)
+#        self.volume= load_data_dict('volume',fini=self.dict_ini,dates_type='str')
+#        self.adjfactor= load_data_dict('adjfactor',fini=self.dict_ini,dates_type='str')
+#        self.vwapsum= load_data_dict('vwapsum',fini=self.dict_ini,dates_type='str')
         adjvolume = self.volume/self.adjfactor
         self.df_data = adjvolume
         self.saveFile('ADJVOLUME')
@@ -78,9 +81,9 @@ class EODPrice(WindBase):
             file_dir = self.ini.findString('EODPrice~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
         filename                    = file_dir + '/' + name.lower() + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         if name in ['OPEN','HIGH','LOW','CLOSE','VWAPSUM']:
             df_data = self.mergeIndex(name, df_data)
             self.saveBinFile(df_data,filename)
@@ -91,7 +94,7 @@ class EODPrice(WindBase):
     
     def run(self):
         self.timeStart()
-        self.getDatabaseData()
+#        self.getDatabaseData()
         self.processData()
         self.timeEnd()
                 
@@ -100,6 +103,7 @@ if __name__ == '__main__':
     try:
         fini = sys.argv[1]
     except:
-        fini = 'EODPrice.ini'
+#        fini = 'EODPrice.ini'
+        fini = '/e/qp.test/pipeline_wind/ini/job.update.ini'
     a = EODPrice(fini)
     a.run()

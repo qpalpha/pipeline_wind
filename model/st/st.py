@@ -49,9 +49,10 @@ class st(WindBase):
             file_dir = self.ini.findString('st~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
+        
         filename                    = file_dir + '/' + 'st' + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         self.saveBinFile(df_data,filename)
     
                 
@@ -60,6 +61,7 @@ if __name__ == '__main__':
     try:
         fini = sys.argv[1]
     except:
-        fini = 'st.ini'
+#        fini = 'st.ini'
+        fini = '/e/qp.test/pipeline_wind/ini/job.update.ini'
     a = st(fini)
     a.run()

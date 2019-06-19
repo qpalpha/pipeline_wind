@@ -68,10 +68,10 @@ class delisted(WindBase):
             file_dir = self.ini.findString('delisted~Outdir')
         except:
             file_dir = './'
-        df_data                     = self.screen_estu(self.df_data)
         
         filename                    = file_dir + '/' + self.file_name + '.bin'
-        df_data                     = self.mergeBin(filename,df_data)
+        df_data                     = self.mergeBin(filename,self.df_data)
+        df_data                     = self.screen_estu(df_data)
         df_data.fillna(1,inplace=True)
         index_tickers               = [tt for tt in df_data.columns if tt[0] not in ['0','3','6']]
         df_data[index_tickers]      = 0

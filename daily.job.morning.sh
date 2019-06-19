@@ -7,7 +7,7 @@
 #Created Time:  2019-06-14 09:02:40
 ####################################
 
-echo '----------------- [Night] Basic Pipeline Starts -----------------'
+echo '----------------- [Morning] Basic Pipeline Starts -----------------'
 
 MAIN_DIR=/e/qp.test/pipeline_wind/model
 INI=/e/qp.test/pipeline_wind/ini/job.update.ini
@@ -77,29 +77,29 @@ echo '* PreAdjPrice'
 cd $MAIN_DIR/PreAdjPrice
 python PreAdjPrice.py $INI morning
 
-##EODIndex
-#echo '* EODIndex'
-#cd $MAIN_DIR/EODIndex
-#python EODIndex.py $INI
-#
-##index
-#echo '* index'
-#cd $MAIN_DIR/index
-#python Index.py $INI
-#
-##ConWeight
-#echo '* ConWeight'
-#cd $MAIN_DIR/ConWeight
-#python ConWeight.py $INI
-#
-##Other
-#echo '* other'
-#cd $MAIN_DIR/other
-#python other.py $INI
-#
-##indzx
-#echo '* indzx'
-#cd $MAIN_DIR/indzx
-#python indzx.py $INI
+#EODIndex
+echo '* EODIndex'
+cd $MAIN_DIR/EODIndex
+python EODIndex.py $INI
 
-echo '----------------- [Night] Basic Pipeline Ends -----------------'
+#index
+echo '* index'
+cd $MAIN_DIR/index
+python Index.py $INI
+
+#ConWeight
+echo '* ConWeight'
+cd $MAIN_DIR/ConWeight
+python ConWeight.py $INI
+
+#Other
+echo '* other'
+cd $MAIN_DIR/other
+python other.py $INI
+
+#indzx
+echo '* indzx'
+cd $MAIN_DIR/indzx
+python indzx.py $INI
+
+echo '----------------- [Morning] Basic Pipeline Ends -----------------'
